@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SITTA UT - Admin Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================
+RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fb;
+    color: #1f2d3d;
+}
+
+/* =========================
+LAYOUT
+========================= */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =========================
+SIDEBAR
+========================= */
+.sidebar {
+    width: 260px;
+    background: #111827;
+    color: white;
+    padding: 20px;
+    position: fixed;
+    height: 100%;
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #38bdf8;
+}
+
+.sidebar a {
+    display: block;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.sidebar a:hover {
+    background: #1f2937;
+    color: white;
+}
+
+/* =========================
+MAIN
+========================= */
+.main {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+}
+
+/* =========================
+TOPBAR
+========================= */
+.topbar {
+    background: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+}
+
+.user {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* =========================
+CONTENT
+========================= */
+.content {
+    padding: 25px;
+}
+
+/* =========================
+CARDS
+========================= */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.card h3 {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.card h2 {
+    margin-top: 10px;
+    font-size: 22px;
+    color: #111827;
+}
+
+/* =========================
+TABLE
+========================= */
+.table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+}
+
+th {
+    background: #f9fafb;
+}
+
+/* =========================
+BUTTON
+========================= */
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+@media(max-width:768px){
+    .sidebar{
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main{
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .cards{
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR (FIXED) -->
+    <div class="sidebar">
+        <h2> SITTA UT</h2>
+
+        <a href="./index.html"> Dashboard</a>
+        <a href="./stok.html"> Stok Bahan Ajar</a>
+        <a href="./tracking.html"> Tracking Order</a>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <h1>Sistem Digital Pemesanan dan Tracking Bahan Ajar UT</h1>
+            <div class="user">👤 Admin SITTA UT</div>
+        </div>
+
+    <div class="container">
+
+        <!-- CONTENT -->
+<div class="content">
+
+    <!-- CARD SAMBUTAN -->
+    <div class="welcome-card fade-in">
+        <p>
+            Sistem Informasi Tracking dan Tata Kelola Bahan Ajar
+            membantu mahasiswa Universitas Terbuka dalam melakukan
+            pemesanan, pemantauan, dan pengelolaan bahan ajar
+            secara lebih mudah, cepat, dan efisien.
+        </p>
+
+    </div>
+
+</div>
+
+</section>
+    </div>
+</div>
+
+</body>
+</html>

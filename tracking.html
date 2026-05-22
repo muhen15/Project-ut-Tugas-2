@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tracking Delivery Order - SITTA UT</title>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================
+RESET
+========================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:#f5f7fb;
+    color:#1f2d3d;
+}
+
+/* =========================
+NAVBAR
+========================= */
+.navbar {
+    background: #111827;
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar h2 {
+    color: #38bdf8;
+    font-size: 18px;
+}
+
+.navbar a {
+    color: #cbd5e1;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 25px;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* =========================
+TITLE
+========================= */
+h1{
+    text-align:center;
+    margin:20px 0;
+}
+
+/* =========================
+CARD
+========================= */
+.card{
+    background:white;
+
+    border-radius:16px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+    border:1px solid #e5e7eb;
+
+    box-shadow:
+    0 3px 15px rgba(0,0,0,0.05);
+}
+
+/* =========================
+LABEL
+========================= */
+label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+/* =========================
+INPUT
+========================= */
+input,
+select{
+
+    width:100%;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    border:1px solid #d1d5db;
+
+    margin-bottom:15px;
+
+    font-size:14px;
+}
+
+input:focus,
+select:focus{
+
+    outline:none;
+
+    border-color:#2563eb;
+
+    box-shadow:
+    0 0 0 3px rgba(37,99,235,0.15);
+}
+
+/* =========================
+BUTTON
+========================= */
+button{
+
+    padding:12px 18px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:0.2s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc2626;
+    color:white;
+}
+
+/* =========================
+DETAIL PAKET
+========================= */
+.detail-paket{
+
+    background:#f8fafc;
+
+    padding:18px;
+
+    border-radius:12px;
+
+    margin-bottom:20px;
+}
+
+/* =========================
+STATUS
+========================= */
+.status{
+    color:#16a34a;
+    font-weight:bold;
+}
+
+/* =========================
+LIST
+========================= */
+ul{
+    padding-left:18px;
+}
+
+li{
+    margin-bottom:10px;
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+@media(max-width:768px){
+
+.navbar{
+    flex-direction:column;
+    gap:10px;
+}
+
+.container{
+    padding:15px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2> SITTA UT</h2>
+    <div>
+        <a href="index.html">Dashboard</a>
+        <a href="stok.html">Stok</a>
+        <a href="tracking.html">Tracking</a>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="container">
+
+<h1>Tracking Delivery Order</h1>
+
+<!-- FORM -->
+<div class="card">
+
+<h2 style="margin-bottom:20px;">
+Tambah Delivery Order
+</h2>
+
+<!-- NOMOR DO -->
+<label>Nomor DO</label>
+
+<select v-model="form.nomorDO">
+
+    <option
+    v-for="item in daftarDO"
+    :key="item">
+
+    {{ item }}
+
+    </option>
+
+</select>
+
+<!-- NIM -->
+<label>NIM</label>
+
+<input
+type="text"
+v-model="form.nim"
+placeholder="Masukkan NIM">
+
+<!-- NAMA -->
+<label>Nama Mahasiswa</label>
+
+<input
+type="text"
+v-model="form.nama"
+placeholder="Masukkan Nama">
+
+<!-- EKSPEDISI -->
+<label>Ekspedisi</label>
+
+<select v-model="form.ekspedisi">
+
+<option disabled value="">
+Pilih Ekspedisi
+</option>
+
+<option
+v-for="item in ekspedisiList"
+:key="item">
+
+{{ item }}
+
+</option>
+
+</select>
+
+<!-- PAKET -->
+<label>Paket Bahan Ajar</label>
+
+<select v-model="selectedPaket">
+
+<option disabled value="">
+Pilih Paket
+</option>
+
+<option
+v-for="item in paket"
+:key="item.kode"
+:value="item">
+
+{{ item.kode }} - {{ item.nama }}
+
+</option>
+
+</select>
+
+<!-- DETAIL PAKET -->
+<div
+class="detail-paket"
+v-if="selectedPaket">
+
+<h3>Detail Isi Paket</h3>
+
+<ul>
+
+<li
+v-for="(buku,index) in selectedPaket.isi"
+:key="index">
+
+{{ buku }}
+
+</li>
+
+</ul>
+
+</div>
+
+<!-- TANGGAL -->
+<label>Tanggal Kirim</label>
+
+<input
+type="date"
+v-model="form.tanggal">
+
+<!-- TOTAL -->
+<label>Total Harga</label>
+
+<input
+type="text"
+:value="'Rp ' + totalHarga.toLocaleString('id-ID')"
+readonly>
+
+<br><br>
+
+<button
+class="btn-primary"
+@click="tambahDO">
+
+ Simpan Delivery Order
+
+</button>
+
+</div>
+
+<!-- TRACKING -->
+<div class="card">
+
+<h2 style="margin-bottom:20px;">
+Cek Tracking
+</h2>
+
+<input
+v-model="nomorDO"
+placeholder="Masukkan Nomor DO">
+
+<button
+class="btn-primary"
+@click="cekTracking">
+
+Cek Tracking
+
+</button>
+
+</div>
+
+<!-- DETAIL -->
+<div
+class="card"
+v-if="dataTracking">
+
+<h3 style="margin-bottom:15px;">
+Detail Pengiriman
+</h3>
+
+<p><b>NIM:</b> {{ dataTracking.nim }}</p>
+<p><b>Nama:</b> {{ dataTracking.nama }}</p>
+<p><b>Status:</b> <span class="status">{{ dataTracking.status }}</span></p>
+<p><b>Ekspedisi:</b> {{ dataTracking.ekspedisi }}</p>
+<p><b>Tanggal Kirim:</b> {{ dataTracking.tanggalKirim }}</p>
+<p><b>Paket:</b> {{ dataTracking.paket }}</p>
+<p><b>Total:</b> Rp {{ dataTracking.total.toLocaleString('id-ID') }}</p>
+
+</div>
+
+<!-- RIWAYAT -->
+<div
+class="card"
+v-if="dataTracking">
+
+<h3 style="margin-bottom:15px;">
+Riwayat Perjalanan
+</h3>
+
+<ul>
+
+<li
+v-for="(item,index) in dataTracking.perjalanan"
+:key="index">
+
+<b>{{ item.waktu }}</b><br>
+
+{{ item.keterangan }}
+
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<script>
+
+new Vue({
+
+el:"#app",
+
+data:{
+
+    nomorDO:"",
+    dataTracking:null,
+
+    /* LIST NOMOR DO */
+    daftarDO:[
+        "DO2025-0001",
+        "DO2025-0002",
+        "DO2025-0003"
+    ],
+
+    /* NOMOR TERAKHIR */
+    lastNumber:3,
+
+    ekspedisiList:[
+        "JNE Regular",
+        "JNE Express"
+    ],
+
+    paket:[
+
+        {
+            kode:"PK001",
+
+            nama:"Paket Sistem Informasi",
+
+            harga:350000,
+
+            isi:[
+                "Analisis Sistem Informasi",
+                "Basis Data",
+                "Pemrograman Web"
+            ]
+        },
+
+        {
+            kode:"PK002",
+
+            nama:"Paket Manajemen",
+
+            harga:275000,
+
+            isi:[
+                "Pengantar Manajemen",
+                "Ekonomi",
+                "Akuntansi Dasar"
+            ]
+        }
+
+    ],
+
+    selectedPaket:"",
+
+    form:{
+        nomorDO:"DO2025-0001",
+        nim:"",
+        nama:"",
+        ekspedisi:"",
+        tanggal:""
+    },
+
+    /* DATA TRACKING */
+    tracking: {
+
+        "DO2025-0001": {
+
+            nim: "123456789",
+
+            nama: "Rina Wulandari",
+
+            status: "Dalam Perjalanan",
+
+            ekspedisi: "JNE",
+
+            tanggalKirim: "2025-08-25",
+
+            paket: "PAKET-UT-001",
+
+            total: 120000,
+
+            perjalanan: [
+
+                {
+                    waktu: "2025-08-25 10:12:20",
+
+                    keterangan:
+                    "Penerimaan di Loket: TANGSEL"
+                },
+
+                {
+                    waktu: "2025-08-25 14:07:56",
+
+                    keterangan:
+                    "Tiba di Hub: JAKSEL"
+                },
+
+                {
+                    waktu: "2025-08-26 08:44:01",
+
+                    keterangan:
+                    "Diteruskan ke Kantor Tujuan"
+                }
+
+            ]
+
+        }
+
+    }
+
+},
+
+computed:{
+
+    totalHarga(){
+
+        return this.selectedPaket
+        ? this.selectedPaket.harga
+        : 0
+    }
+
+},
+
+mounted(){
+
+    const today =
+    new Date()
+
+    this.form.tanggal =
+    today.toISOString().split('T')[0]
+
+},
+
+methods:{
+
+/* =========================
+TAMBAH DELIVERY ORDER
+=========================*/
+tambahDO(){
+
+    if(
+        !this.form.nim ||
+        !this.form.nama ||
+        !this.form.ekspedisi ||
+        !this.selectedPaket
+    ){
+
+        alert("Lengkapi data terlebih dahulu!")
+
+        return
+    }
+
+    /* SIMPAN DATA */
+    this.tracking[this.form.nomorDO] = {
+
+        nim:this.form.nim,
+
+        nama:this.form.nama,
+
+        status:"Sedang Diproses",
+
+        ekspedisi:this.form.ekspedisi,
+
+        tanggalKirim:this.form.tanggal,
+
+        paket:this.selectedPaket.nama,
+
+        total:this.selectedPaket.harga,
+
+        perjalanan:[
+
+            {
+                waktu:new Date().toISOString().slice(0,19).replace("T"," "),
+
+                keterangan:
+                "Delivery Order berhasil dibuat"
+            }
+
+        ]
+
+    }
+
+    alert(
+        `${this.form.nomorDO} berhasil ditambahkan`
+    )
+
+    /* NOMOR BARU */
+    this.lastNumber++
+
+    const nomorBaru =
+    `DO2025-${String(this.lastNumber).padStart(4,'0')}`
+
+    /* TAMBAH KE PILIHAN */
+    this.daftarDO.push(nomorBaru)
+
+    /* PILIH OTOMATIS */
+    this.form.nomorDO =
+    nomorBaru
+
+    /* RESET */
+    this.form.nim=""
+    this.form.nama=""
+    this.form.ekspedisi=""
+    this.selectedPaket=""
+
+},
+
+/* =========================
+CEK TRACKING
+========================= */
+cekTracking(){
+
+    let hasil =
+    this.tracking[this.nomorDO]
+
+    if(!hasil){
+
+        alert("Nomor DO tidak ditemukan!")
+        return
+    }
+
+    this.dataTracking =
+    hasil
+
+}
+
+}
+
+})
+
+</script>
+
+</body>
+</html>

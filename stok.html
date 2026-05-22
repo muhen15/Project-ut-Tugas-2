@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stok Bahan Ajar UT</title>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* RESET */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:#f5f7fb;
+    color:#1f2d3d;
+}
+
+/* NAVBAR */
+.navbar{
+    background:#111827;
+    color:white;
+    padding:15px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.navbar h2{
+    color:#38bdf8;
+    font-size:18px;
+}
+
+.navbar a{
+    color:#cbd5e1;
+    text-decoration:none;
+    margin-left:15px;
+}
+
+/* CONTAINER */
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:25px;
+}
+
+h1{
+    text-align:center;
+    margin:20px 0;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.card{
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:18px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+}
+
+button{
+    padding:8px 12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin-right:5px;
+    margin-top:10px;
+}
+
+.btn-edit{ background:#f59e0b; color:white; }
+.btn-hapus{ background:#dc2626; color:white; }
+.btn-simpan{ background:#2563eb; color:white; }
+
+/* STATUS */
+.aman{ color:green; font-weight:600; }
+.menipis{ color:orange; font-weight:600; }
+.kosong{ color:red; font-weight:600; }
+
+/* FORM */
+.form-box{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+    margin-bottom:20px;
+}
+
+input, select, textarea{
+    width:100%;
+    padding:10px;
+    margin:5px 0;
+    border-radius:10px;
+    border:1px solid #d1d5db;
+}
+
+textarea{ min-height:80px; }
+
+@media(max-width:768px){
+    .grid{ grid-template-columns:1fr; }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+<h2>SITTA UT</h2>
+<div>
+<a href="index.html">Dashboard</a>
+<a href="stok.html">Stok</a>
+<a href="tracking.html">Tracking</a>
+</div>
+</div>
+
+<div id="app" class="container">
+
+<h1>Sistem Stok Bahan Ajar UT</h1>
+
+<!-- FORM -->
+<div class="form-box">
+
+<h3>{{ isEdit ? "✏ Edit Data Bahan Ajar" : "Tambah Bahan Ajar" }}</h3>
+
+<input v-model="form.kode" placeholder="Kode Buku">
+<input v-model="form.judul" placeholder="Judul Buku">
+
+<select v-model="form.kategori">
+<option value="">Pilih Kategori</option>
+<option v-for="k in kategoriList">{{ k }}</option>
+</select>
+
+<select v-model="form.upbjj">
+<option value="">Pilih UPBJJ</option>
+<option v-for="u in upbjjList">{{ u }}</option>
+</select>
+
+<input v-model="form.lokasiRak" placeholder="Lokasi Rak">
+<input v-model="form.harga" type="number" placeholder="Harga">
+<input v-model="form.qty" type="number" placeholder="Qty">
+<input v-model="form.safety" type="number" placeholder="Safety Stock">
+
+<textarea v-model="form.catatanHTML" placeholder="Catatan"></textarea>
+
+<button class="btn-simpan" @click="isEdit ? updateData() : tambahData()">
+{{ isEdit ? "Update Data" : "Tambah Data" }}
+</button>
+
+</div>
+
+<!-- FILTER -->
+<div class="form-box">
+
+<h3>Filter Data</h3>
+
+<select v-model="selectedUpbjj">
+<option value="">Pilih UT-Daerah</option>
+<option v-for="u in upbjjList">{{ u }}</option>
+</select>
+
+<select v-if="selectedUpbjj" v-model="selectedKategori">
+<option value="">Pilih Kategori</option>
+<option v-for="k in kategoriList">{{ k }}</option>
+</select>
+
+<select v-model="selectedStatus">
+<option value="">Filter Status</option>
+<option value="aman">Aman</option>
+<option value="menipis">Menipis</option>
+<option value="kosong">Kosong</option>
+</select>
+
+<!-- SORT -->
+<div style="margin-top:15px;">
+<h4>Sort Data</h4>
+
+<button @click="sortBy('judul')">Judul</button>
+<button @click="sortBy('qty')">Stock</button>
+<button @click="sortBy('harga')">Harga</button>
+</div>
+
+</div>
+
+<!-- LIST -->
+<div class="grid">
+
+<div class="card" v-for="(item,index) in filteredStok" :key="item.kode">
+
+<h3>{{ item.judul }}</h3>
+<p>Kode: {{ item.kode }}</p>
+
+<p>Kategori: {{ item.kategori }}</p>
+<p>UPBJJ: {{ item.upbjj }}</p>
+<p>Lokasi Rak: {{ item.lokasiRak }}</p>
+<p>Qty: {{ item.qty }}</p>
+<p>Harga: Rp {{ item.harga }}</p>
+<p>Safety Stock: {{ item.safety }}</p>
+
+<p :class="getStatusClass(item)">
+{{ getStatus(item) }}
+</p>
+
+<p v-html="item.catatanHTML"></p>
+
+<button class="btn-edit" @click="editData(item,index)">Edit</button>
+<button class="btn-hapus" @click="hapusData(item.kode)">Hapus</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+new Vue({
+
+el:'#app',
+
+data:{
+sortKey:"",
+sortAsc:true,
+
+selectedUpbjj:"",
+selectedKategori:"",
+selectedStatus:"",
+
+upbjjList:["Jakarta","Surabaya","Makassar","Padang","Denpasar"],
+kategoriList:["MK Wajib","MK Pilihan","Praktikum"],
+
+stok:[
+{kode:"EKMA4116",judul:"Pengantar Manajemen",kategori:"MK Wajib",upbjj:"Jakarta",lokasiRak:"R1-A3",harga:65000,qty:28,safety:20,catatanHTML:"<em>Edisi 2024</em>"},
+{kode:"EKMA4115",judul:"Pengantar Akuntansi",kategori:"MK Wajib",upbjj:"Jakarta",lokasiRak:"R1-A4",harga:60000,qty:7,safety:15,catatanHTML:"<strong>Cover baru</strong>"},
+{kode:"BIOL4201",judul:"Biologi Umum",kategori:"Praktikum",upbjj:"Surabaya",lokasiRak:"R3-B2",harga:80000,qty:12,safety:10,catatanHTML:"Butuh pendingin"},
+{kode:"FISIP4001",judul:"Dasar Sosiologi",kategori:"MK Pilihan",upbjj:"Makassar",lokasiRak:"R2-C1",harga:55000,qty:0,safety:8,catatanHTML:"Stok kosong"}
+],
+
+form:{
+kode:"",judul:"",kategori:"",upbjj:"",lokasiRak:"",harga:"",qty:"",safety:"",catatanHTML:""
+},
+
+isEdit:false,
+editIndex:null
+},
+
+computed:{
+filteredStok(){
+
+let data = this.stok.filter(item => {
+
+const filterUpbjj =
+!this.selectedUpbjj || item.upbjj === this.selectedUpbjj;
+
+const filterKategori =
+!this.selectedKategori || item.kategori === this.selectedKategori;
+
+const filterStatus =
+!this.selectedStatus ||
+(this.selectedStatus === "aman" && item.qty >= item.safety) ||
+(this.selectedStatus === "menipis" && item.qty < item.safety && item.qty > 0) ||
+(this.selectedStatus === "kosong" && item.qty == 0);
+
+return filterUpbjj && filterKategori && filterStatus;
+
+});
+
+if(this.sortKey){
+data.sort((a,b)=>{
+
+let result =
+typeof a[this.sortKey] === "string"
+? a[this.sortKey].localeCompare(b[this.sortKey])
+: a[this.sortKey] - b[this.sortKey];
+
+return this.sortAsc ? result : -result;
+
+});
+}
+
+return data;
+}
+
+},
+
+methods:{
+
+sortBy(key){
+if(this.sortKey === key){
+this.sortAsc = !this.sortAsc;
+}else{
+this.sortKey = key;
+this.sortAsc = true;
+}
+},
+
+tambahData(){
+this.stok.push({
+...this.form,
+harga:Number(this.form.harga),
+qty:Number(this.form.qty),
+safety:Number(this.form.safety)
+});
+this.resetForm();
+},
+
+editData(item,index){
+this.isEdit=true;
+this.editIndex=index;
+this.form={...item};
+},
+
+updateData(){
+this.stok.splice(this.editIndex,1,{
+...this.form,
+harga:Number(this.form.harga),
+qty:Number(this.form.qty),
+safety:Number(this.form.safety)
+});
+this.resetForm();
+},
+
+hapusData(kode){
+this.stok=this.stok.filter(i=>i.kode!=kode);
+},
+
+resetForm(){
+this.form={kode:"",judul:"",kategori:"",upbjj:"",lokasiRak:"",harga:"",qty:"",safety:"",catatanHTML:""};
+this.isEdit=false;
+this.editIndex=null;
+},
+
+getStatus(item){
+if(item.qty==0) return " Kosong";
+if(item.qty<item.safety) return " Menipis";
+return " Aman";
+},
+
+getStatusClass(item){
+if(item.qty==0) return "kosong";
+if(item.qty<item.safety) return "menipis";
+return "aman";
+}
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
