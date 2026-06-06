@@ -1,0 +1,147 @@
+<template id="tpl-stock">
+    <div class="stock-container">
+        <h2>Manajemen Stok Bahan Ajar</h2>
+
+        <div class="filter-panel" style="display: flex; gap: 15px; margin-bottom: 20px;">
+            
+            <div class="filter-group">
+                <label for="filter-upbjj">Wilayah UPBJJ:</label>
+                <select id="filter-upbjj" v-model="selectedUpbjj">
+                    <option value="">-- Semua UPBJJ --</option>
+                    <option v-for="upbjj in upbjjList" :key="upbjj" :value="upbjj">
+                        {{ upbjj }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-kategori">Kategori Bahan Ajar:</label>
+                <select id="filter-kategori" v-model="selectedKategori">
+                    <option value="">-- Semua Kategori --</option>
+                    <option v-for="kat in kategoriList" :key="kat" :value="kat">
+                        {{ kat }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-status">Peringatan Re-order:</label>
+                <select id="filter-status" v-model="selectedStatusStok">
+                    <option value="">-- Semua Status --</option>
+                    <option value="butuh_reorder">⚠️ Butuh Re-order (Kosong & Menipis)</option>
+                    <option value="kosong">❌ Hanya Stok Kosong</option>
+                    <option value="aman">✅ Hanya Stok Aman</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-form">
+
+    <h3>
+        {{ editMode ? '✏️ Edit Bahan Ajar' : '➕ Tambah Bahan Ajar' }}
+    </h3>
+
+    <input v-model="formBaru.kode" placeholder="Kode Modul">
+    <input v-model="formBaru.judul" placeholder="Judul">
+    <input v-model="formBaru.Catatan" placeholder="Catatan">
+
+    <select v-model="formBaru.kategori">
+        <option value="">Pilih Kategori</option>
+        <option
+            v-for="k in kategoriList"
+            :key="k"
+            :value="k">
+            {{ k }}
+        </option>
+    </select>
+
+    <select v-model="formBaru.upbjj">
+        <option value="">Pilih UPBJJ</option>
+        <option
+            v-for="u in upbjjList"
+            :key="u"
+            :value="u">
+            {{ u }}
+        </option>
+    </select>
+
+    <input
+        type="number"
+        v-model="formBaru.harga"
+        placeholder="Harga">
+
+    <input
+        type="number"
+        v-model="formBaru.qty"
+        placeholder="Qty">
+
+    <input
+        type="number"
+        v-model="formBaru.safety"
+        placeholder="Safety Stock">
+
+    <button
+        v-if="!editMode"
+        @click="tambahBahanAjar()">
+        Simpan
+    </button>
+
+    <button
+        v-else
+        @click="updateBahanAjar()">
+        Update Data
+    </button>
+
+</div>
+
+<table class="table-stock" border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr style="background-color: #f5f5f5;">
+            <th>Kode</th>
+            <th>Judul</th>
+            <th>Kategori</th>
+            <th>UPBJJ</th>
+            <th>Harga</th>
+            <th>Qty</th>
+            <th>Lokasi Rak</th>
+            <th>Status</th>
+            <th>Pengaturan</th>
+            <th>Catatan</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="(item, index) in filteredStock" :key="item.kode" style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px; font-weight: bold; color: #0056b3;">{{ item.kode }}</td>
+            
+            <td style="padding: 10px;">{{ item.judul }}</td>
+            
+            <td style="padding: 10px;">{{ item.kategori }}</td>
+            
+            <td style="padding: 10px;">{{ item.upbjj }}</td>
+            
+            <td style="padding: 10px;">{{ formatRupiah(item.harga) }}</td>
+            
+            <td style="padding: 10px;">{{ formatQty(item.qty) }}</td>
+            
+            <td style="padding: 10px;">{{ item.lokasiRak || '-' }}</td>
+            
+            <td style="padding: 10px;">
+                <span v-if="item.qty === 0" style="background: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;">❌ Kosong</span>
+                <span v-else-if="item.qty < item.safety" style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;">⚠ Menipis</span>
+                <span v-else style="background: #e2f0d9; color: #385723; padding: 3px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;">✔ Aman</span>
+            </td>
+            
+            <td style="padding: 10px; text-align: center;">
+                <button class="btn btn-primary" @click="editData(item)" style="padding: 4px 10px; font-size: 0.85em; margin-right: 5px;">Edit</button>
+                <button class="btn btn-danger" @click="hapusData(item.kode)" style="padding: 4px 10px; font-size: 0.85em; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Hapus</button>
+            </td>
+
+            <td style="padding: 10px;">{{ item.catatan || '-' }}</td>
+        </tr>
+        
+        <tr v-if="filteredStock.length === 0">
+            <td colspan="10" style="text-align: center; color: #999; padding: 20px;">Data stok tidak ditemukan / kosong.</td>
+        </tr>
+    </tbody>
+</table>
+    </div>
+</template>

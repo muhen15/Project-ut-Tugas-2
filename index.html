@@ -2,246 +2,477 @@
 <html lang="id">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SITTA UT - Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SITTA UT - Sistem Tracking Bahan Ajar</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-
-/* =========================
-RESET
-========================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #f5f7fb;
-    color: #1f2d3d;
-}
-
-/* =========================
-LAYOUT
-========================= */
-.dashboard {
-    display: flex;
-    min-height: 100vh;
-}
-
-/* =========================
-SIDEBAR
-========================= */
-.sidebar {
-    width: 260px;
-    background: #111827;
-    color: white;
-    padding: 20px;
-    position: fixed;
-    height: 100%;
-}
-
-.sidebar h2 {
-    font-size: 18px;
-    margin-bottom: 30px;
-    color: #38bdf8;
-}
-
-.sidebar a {
-    display: block;
-    padding: 12px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    color: #cbd5e1;
-    text-decoration: none;
-    transition: 0.2s;
-}
-
-.sidebar a:hover {
-    background: #1f2937;
-    color: white;
-}
-
-/* =========================
-MAIN
-========================= */
-.main {
-    margin-left: 260px;
-    width: calc(100% - 260px);
-}
-
-/* =========================
-TOPBAR
-========================= */
-.topbar {
-    background: white;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-}
-
-.user {
-    font-size: 14px;
-    color: #6b7280;
-}
-
-/* =========================
-CONTENT
-========================= */
-.content {
-    padding: 25px;
-}
-
-/* =========================
-CARDS
-========================= */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin-bottom: 25px;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.card h3 {
-    font-size: 14px;
-    color: #6b7280;
-}
-
-.card h2 {
-    margin-top: 10px;
-    font-size: 22px;
-    color: #111827;
-}
-
-/* =========================
-TABLE
-========================= */
-.table {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 14px;
-}
-
-th {
-    background: #f9fafb;
-}
-
-/* =========================
-BUTTON
-========================= */
-.btn {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-}
-
-.btn-primary {
-    background: #2563eb;
-    color: white;
-}
-
-.btn-danger {
-    background: #dc2626;
-    color: white;
-}
-
-/* =========================
-RESPONSIVE
-========================= */
-@media(max-width:768px){
-    .sidebar{
-        position: relative;
-        width: 100%;
-        height: auto;
-    }
-
-    .main{
-        margin-left: 0;
-        width: 100%;
-    }
-
-    .cards{
-        grid-template-columns: 1fr;
-    }
-}
-
-</style>
-
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 </head>
 
 <body>
 
-<div class="dashboard">
+<div id="app" class="app-layout">
 
-    <!-- SIDEBAR (FIXED) -->
-    <div class="sidebar">
-        <h2> SITTA UT</h2>
-
-        <a href="./index.html"> Dashboard</a>
-        <a href="./stok.html"> Stok Bahan Ajar</a>
-        <a href="./tracking.html"> Tracking Order</a>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+    <div class="sidebar-logo-container">
     </div>
+        <h2>SITTA UT</h2>
+
+        <button class="menu-btn" @click="tab='dashboard'">Dashboard</button>
+        <button class="menu-btn" @click="tab='stok'">Stok Bahan Ajar</button>
+        <button class="menu-btn" @click="tab='tracking'">Tracking Order</button>
+
+    </aside>
 
     <!-- MAIN -->
-    <div class="main">
-
-        <!-- TOPBAR -->
-        <div class="topbar">
-            <h1>Sistem Digital Pemesanan dan Tracking Bahan Ajar UT</h1>
-            <div class="user">👤 Admin SITTA UT</div>
-        </div>
-
-    <div class="container">
+    <div class="main-content">
 
         <!-- CONTENT -->
-<div class="content">
+        <div class="container">
 
-    <!-- CARD SAMBUTAN -->
-    <div class="welcome-card fade-in">
-        <p>
-            Sistem Informasi Tracking dan Tata Kelola Bahan Ajar
-            membantu mahasiswa Universitas Terbuka dalam melakukan
-            pemesanan, pemantauan, dan pengelolaan bahan ajar
-            secara lebih mudah, cepat, dan efisien.
+            <!-- ================= DASHBOARD ================= -->
+            <section v-if="tab==='dashboard'" class="dashboard-page">
+
+                <div class="hero">
+                    <span class="hero-badge">UNIVERSITAS TERBUKA</span>
+
+                    <h1>
+                        Sistem Informasi Tracking & Tata Kelola Bahan Ajar
+                    </h1>
+
+                    <p>
+                        Kelola stok bahan ajar, monitoring distribusi, dan tracking pengiriman dalam satu sistem terintegrasi.
+                    </p>
+                </div>
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div>
+                            <h2>{{ stok.length }}</h2>
+                            <p>Total Bahan Ajar</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">⚠️</div>
+                        <div>
+                            <h2>{{ stokMenipis }}</h2>
+                            <p>Stok Menipis</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">❌</div>
+                        <div>
+                            <h2>{{ stokKosong }}</h2>
+                            <p>Stok Kosong</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">🚚</div>
+                        <div>
+                            <h2>{{ totalDO }}</h2>
+                            <p>Delivery Order</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="about-card">
+                    <h2>Tentang SITTA UT</h2>
+                    <p>
+                        SITTA UT merupakan sistem berbasis web untuk mengelola stok,
+                        distribusi, pemesanan, serta pelacakan bahan ajar mahasiswa
+                        Universitas Terbuka secara cepat, akurat, dan terintegrasi.
+                    </p>
+                </div>
+
+            </section>
+
+            <!-- ================= STOCK ================= -->
+            <ba-stock-table
+                v-if="tab==='stok'"
+                :stok="stok"
+                :upbjj-list="upbjjList"
+                :kategori-list="kategoriList"
+                @hapus-stok="hapusStok">
+            </ba-stock-table>
+
+            <!-- ================= TRACKING ================= -->
+            <do-tracking
+                v-if="tab === 'tracking'"
+                :tracking="tracking"
+                :paket="paket"
+                :pengiriman-list="pengirimanList">
+            </do-tracking>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/x-template" id="tpl-stock">
+<div class="stok-page">
+
+    <div class="form-header-blue">
+        <h2>Stok Bahan Ajar</h2>
+        <p class="sub-text" style="color: #e0e6ed !important; margin: 8px 0 0 0; font-size: 14px; font-weight: 400;">
+            Kelola stok bahan ajar, tambahkan data baru, dan pantau status ketersediaan dengan mudah.
+        </p>
+    </div>
+
+    <div class="card-do" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #0056b3;">
+            <span v-if="isEdit">📝 Edit Bahan Ajar</span>
+            <span v-else>➕ Tambah Bahan Ajar Baru</span>
+        </h3>
+        
+        <div class="form-grid-do" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Kode Modul</label>
+                <input v-model="formBaru.kode" :disabled="isEdit" placeholder="Contoh: MSIM4101" style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Judul Bahan Ajar</label>
+                <input v-model="formBaru.judul" placeholder="Masukkan Judul Buku" style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Kategori</label>
+                <select v-model="formBaru.kategori" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                    <option value="" disabled>Pilih Kategori</option>
+                    <option v-for="k in kategoriList" :key="k" :value="k">{{ k }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">UPBJJ Tujuan</label>
+                <select v-model="formBaru.upbjj" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                    <option value="" disabled>Pilih Wilayah</option>
+                    <option v-for="u in upbjjList" :key="u" :value="u">{{ u }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Harga Modul (Rp)</label>
+                <input type="number" v-model="formBaru.harga" placeholder="Contoh: 50000" style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Jumlah Stok (Qty)</label>
+                <input type="number" v-model="formBaru.qty" placeholder="0" style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Safety Stock (Batas Aman)</label>
+                <input type="number" v-model="formBaru.safety" placeholder="10" style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Lokasi Rak</label>
+                <input v-model="formBaru.lokasiRak" placeholder="Contoh: R1-B5" style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+                        
+            <div class="form-group">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Catatan</label>
+                <input v-model="formBaru.catatan" placeholder="Catatan (opsional)" style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+        </div>
+
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button class="btn btn-primary" @click="tambahBahanAjar" style="flex: 1; padding: 10px; font-weight: bold; cursor: pointer;">
+                {{ isEdit ? 'Perbarui Data Bahan Ajar' : 'Simpan Bahan Ajar Baru' }}
+            </button>
+            <button v-if="isEdit" class="btn btn-secondary" @click="batalEdit" style="padding: 10px 20px; font-weight: bold; background: #6c757d; color: white; border: none; cursor: pointer;">
+                Batal
+            </button>
+        </div>
+    </div>
+
+<div style="max-width: 100%; margin: 20px auto; padding: 0 10px; font-family: sans-serif;">
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #4a5568; margin-bottom: 6px;">Filter UPBJJ</label>
+                <select v-model="selectedUpbjj" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #cbd5e0; background-color: #fff;">
+                    <option value="">Semua UPBJJ</option>
+                    <option v-for="u in upbjjList" :key="u" :value="u">{{ u }}</option>
+                </select>
+            </div>
+            
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #4a5568; margin-bottom: 6px;">Filter Kategori</label>
+                <select v-model="selectedKategori" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #cbd5e0; background-color: #fff;">
+                    <option value="">Semua Kategori</option>
+                    <option v-for="k in kategoriList" :key="k" :value="k">{{ k }}</option>
+                </select>
+            </div>
+            
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #4a5568; margin-bottom: 6px;">Status Kondisi Stok</label>
+                <select v-model="filterReorder" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #cbd5e0; background-color: #fff;">
+                    <option value="">Semua Status</option>
+                    <option value="kosong">❌ Kosong</option>
+                    <option value="menipis">⚠ Menipis</option>
+                    <option value="aman">✅ Aman (≥ Batas Safety)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="ba-stock-table-wrapper" style="width: 100%; overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+            <table class="table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                
+                <thead>
+                    <tr style="background-color: #0056b3; color: white;">
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold; white-space: nowrap;">Kode</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold;">Judul</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold; white-space: nowrap;">Kategori</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold; white-space: nowrap;">UPBJJ</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold; white-space: nowrap;">Harga</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold; white-space: nowrap; text-align: center;">Qty</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold; white-space: nowrap; text-align: center;">Lokasi Rak</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold; white-space: nowrap; text-align: center;">Status</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold; white-space: nowrap; text-align: center;">Pengaturan</th>
+                        <th style="padding: 14px 12px; font-size: 14px; font-weight: bold;">Catatan</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    <tr v-for="(item, index) in filteredStock" :key="item.kode" style="border-bottom: 1px solid #e2e8f0; vertical-align: middle;">
+                        <td style="padding: 12px 12px; font-size: 14px; font-weight: bold; color: #0056b3; white-space: nowrap;">{{ item.kode }}</td>
+                        <td style="padding: 12px 12px; font-size: 14px; color: #2d3748;">{{ item.judul }}</td>
+                        <td style="padding: 12px 12px; font-size: 14px; color: #2d3748; white-space: nowrap;">{{ item.kategori }}</td>
+                        <td style="padding: 12px 12px; font-size: 14px; color: #2d3748; white-space: nowrap;">{{ item.upbjj }}</td>
+                        <td style="padding: 12px 12px; font-size: 14px; color: #2d3748; white-space: nowrap;">{{ formatRupiah(item.harga) }}</td>
+                        <td style="padding: 12px 12px; font-size: 14px; color: #2d3748; text-align: center; white-space: nowrap;">{{ formatQty(item.qty) }}</td>
+                        <td style="padding: 12px 12px; font-size: 14px; color: #2d3748; text-align: center; white-space: nowrap;">{{ item.lokasi_rak || item.lokasiRak || '-' }}</td>
+                        <td style="padding: 12px 12px; text-align: center; white-space: nowrap;">
+                            <span v-if="item.qty === 0" style="background: #fed7d7; color: #9b2c2c; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold; display: inline-block;">❌ Kosong</span>
+                            <span v-else-if="item.qty < item.safety" style="background: #feebc8; color: #9c4221; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold; display: inline-block;">⚠ Menipis</span>
+                            <span v-else style="background: #c6f6d5; color: #22543d; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold; display: inline-block;">✔ Aman</span>
+                        </td>
+                        <td style="padding: 12px 12px; text-align: center; white-space: nowrap;">
+                            <button class="btn btn-primary" @click="editData(item)" style="padding: 5px 12px; font-size: 13px; font-weight: 600; margin-right: 5px; border-radius: 4px; background: #0056b3; color: white; border: none; cursor: pointer;">Edit</button>
+                            <button class="btn btn-danger" @click="hapusData(item.kode)" style="padding: 5px 12px; font-size: 13px; font-weight: 600; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Hapus</button>
+                        </td>
+                        <td style="padding: 12px 12px; font-size: 14px; color: #4a5568; line-height: 1.5; min-width: 180px;">{{ item.catatan || '-' }}</td>
+                    </tr>
+                    <tr v-if="filteredStock.length === 0">
+                        <td colspan="10" style="text-align: center; padding: 30px; color: #718096; font-size: 15px; font-style: italic; background: #f8f9fa;">
+                            Data tidak ditemukan atau tidak ada stok yang cocok dengan filter.
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="tpl-do-tracking">
+<div class="tracking-page">
+
+    <div class="stock-header-box">
+        <h2>Tracking Delivery Order</h2>
+        <p>Monitoring status pengiriman bahan ajar Universitas Terbuka</p>
+    </div>
+
+    <div class="stats-grid" style="margin-top:20px;">
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div>
+                <h2>{{ Object.keys(tracking).length }}</h2>
+                <p>Total DO</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-do">
+        <h3>➕ Tambah Delivery Order</h3>
+        <p class="do-number">
+            Nomor otomatis: <b>{{ generateNomorDO() }}</b>
         </p>
 
+        <div class="form-grid-do">
+            <div class="form-group">
+                <label>NIM</label>
+                <input v-model="form.nim" placeholder="Masukkan NIM">
+            </div>
+
+            <div class="form-group">
+                <label>Nama</label>
+                <input v-model="form.nama" placeholder="Masukkan Nama">
+            </div>
+
+            <div class="form-group">
+                <label>Ekspedisi</label>
+                <select v-model="form.ekspedisi">
+                    <option disabled value="">Pilih Ekspedisi</option>
+                    <option>JNE Regular</option>
+                    <option>JNE Express</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tanggal Kirim</label>
+                <input type="date" v-model="form.tanggalKirim">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:15px;">
+            <label>Paket Bahan Ajar</label>
+            <select v-model="form.paketDipilih">
+                <option disabled value="">Pilih Paket</option>
+                <option v-for="p in paket" :value="p" :key="p.kode">
+                    {{ p.kode }} - {{ p.nama }}
+                </option>
+            </select>
+        </div>
+
+        <div v-if="form.paketDipilih" class="paket-box">
+            <p><b>Detail Paket:</b></p>
+            <p>{{ form.paketDipilih.nama }}</p>
+            <p>Harga: Rp {{ form.paketDipilih.harga }}</p>
+        </div>
+
+        <div class="total-box">
+            Total Harga: Rp {{ form.paketDipilih ? form.paketDipilih.harga : 0 }}
+        </div>
+
+        <button class="btn btn-primary full-btn" @click="simpanDO">
+            Simpan Delivery Order
+        </button>
+    </div>
+
+    <hr style="margin: 30px 0;">
+
+    <div v-if="hasilCari" class="tracking-result-card" style="margin-bottom: 30px; border: 2px solid #0056b3;">
+        <div class="result-top">
+            <h3>📍 Detail Order: {{ nomorDoTerpilih }}</h3>
+            <span class="badge success">{{ hasilCari.status }}</span>
+            <button @click="tutupDetail" style="float: right; background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Tutup Detail</button>
+        </div>
+
+        <div class="result-info">
+            <p><b>Nama:</b> {{ hasilCari.nama }}</p>
+            <p><b>NIM:</b> {{ hasilCari.nim }}</p>
+            <p><b>Ekspedisi:</b> {{ hasilCari.ekspedisi }}</p>
+            <p><b>Total:</b> Rp {{ hasilCari.total ? hasilCari.total.toLocaleString('id-ID') : 0 }}</p>
+            <p><b>Tanggal Kirim:</b> {{ hasilCari.tanggalKirim }}</p>
+        </div>
+
+        <hr>
+        <h4>📍 Riwayat Pengiriman</h4>
+        <div class="timeline">
+            <div v-for="(p, index) in hasilCari.perjalanan" :key="index" style="margin-bottom: 10px;">
+                <div v-if="editIndex !== index">
+                    📍 {{ p.waktu }} - {{ p.keterangan }}
+                    <button @click="mulaiEditProgress(index, p.keterangan)" style="margin-left: 10px;">Edit</button>
+                    <button @click="hapusProgress(index)" style="color: red;">Hapus</button>
+                </div>
+                <div v-else>
+                    <input v-model="editText" style="width: 60%;">
+                    <button @click="simpanEditProgress(index)">Simpan</button>
+                    <button @click="editIndex = null">Batal</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tracking-progress" style="margin-top: 15px;">
+            <input v-model="progressBaru" placeholder="Tambah progress baru">
+            <button @click="tambahProgress">Tambah Log</button>
+        </div>
+    </div>
+
+    <div class="card-do" style="padding: 15px;">
+        <h3>📦 Daftar Semua Delivery Order</h3>
+        
+        <div class="tracking-search-box" style="margin-bottom: 15px; display: flex; gap: 10px;">
+            <input v-model="keyword" type="text" placeholder="Filter cepat berdasarkan No DO / NIM / Nama..." style="flex: 1; padding: 8px;">
+            <button @click="keyword = ''" style="background: #6c757d; color: white;">Clear</button>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="table-stok" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background-color: #0056b3; color: white;">
+                        <th style="padding: 12px 10px;">No DO</th>
+                        <th style="padding: 12px 10px;">NIM</th>
+                        <th style="padding: 12px 10px;">Nama Mahasiswa</th>
+                        <th style="padding: 12px 10px;">Ekspedisi</th>
+                        <th style="padding: 12px 10px;">Tanggal Kirim</th>
+                        <th style="padding: 12px 10px;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, noDO) in listDoTerfilter" :key="noDO" style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px; font-weight: bold; color: #0056b3;">{{ noDO }}</td>
+                        <td style="padding: 10px;">{{ item.nim }}</td>
+                        <td style="padding: 10px;"><b>{{ item.nama }}</b></td>
+                        <td style="padding: 10px;">{{ item.ekspedisi }}</td>
+                        <td style="padding: 10px;">{{ item.tanggalKirim || '-' }}</td>
+                        <td style="padding: 10px;">
+                            <span class="badge success" style="background: #e2f0d9; color: #385723; padding: 3px 8px; border-radius: 4px;">
+                                {{ item.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr v-if="Object.keys(listDoTerfilter).length === 0">
+                        <td colspan="7" style="text-align: center; color: #999; padding: 20px;">Data order tidak ditemukan / kosong.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>
+</script>
 
-</section>
+<!-- TEMPLATE COMPONENT -->
+<template id="tpl-status-badge">
+    <span>
+        <span v-if="qty===0" class="badge danger">❌ Kosong</span>
+        <span v-else-if="qty<safety" class="badge warning">⚠ Menipis</span>
+        <span v-else class="badge success">✔ Aman</span>
+    </span>
+</template>
+
+<template id="tpl-app-modal">
+<div v-if="show" class="modal-overlay">
+    <div class="modal-box">
+
+        <h3>Konfirmasi Hapus</h3>
+
+        <p>Apakah Anda yakin ingin menghapus data?</p>
+
+        <div class="modal-actions">
+            <button class="btn btn-danger" @click="$emit('confirm')">
+                Hapus
+            </button>
+
+            <button class="btn" @click="$emit('close')">
+                Batal
+            </button>
+        </div>
+
     </div>
 </div>
 
+</template>
+
+<!-- JS -->
+<script src="components/status-badge.js"></script>
+<script src="components/app-modal.js"></script>
+<script src="components/stock-table.js"></script>
+<script src="components/do-tracking.js"></script>
+
+<script src="services/api.js"></script>
+
+<script src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,61 @@
+<template id="tpl-status-badge">
+
+    <span>
+
+        <span
+            v-if="qty===0"
+            class="badge danger">
+
+            ❌ Kosong
+
+        </span>
+
+        <span
+            v-else-if="qty<safety"
+            class="badge warning">
+
+            ⚠ Menipis
+
+        </span>
+
+        <span
+            v-else
+            class="badge success">
+
+            ✔ Aman
+
+        </span>
+
+    </span>
+
+</template><template id="tpl-status-badge">
+
+    <span>
+
+        <span
+            v-if="qty===0"
+            class="badge danger">
+
+            ❌ Kosong
+
+        </span>
+
+        <span
+            v-else-if="qty<safety"
+            class="badge warning">
+
+            ⚠ Menipis
+
+        </span>
+
+        <span
+            v-else
+            class="badge success">
+
+            ✔ Aman
+
+        </span>
+
+    </span>
+
+</template>

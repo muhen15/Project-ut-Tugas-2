@@ -1,0 +1,150 @@
+<script type="text/x-template" id="tpl-do-tracking">
+<div class="tracking-page" style="padding: 20px; font-family: sans-serif;">
+
+    <div class="tracking-header-box" style="margin-bottom: 20px;">
+        <h2>Tracking Delivery Order</h2>
+        <p>Kelola dan monitoring status pengiriman bahan ajar Universitas Terbuka</p>
+    </div>
+
+    <div class="tracking-search-box" style="margin-bottom: 25px; display: flex; gap: 10px;">
+        <input
+            v-model="keyword"
+            type="text"
+            placeholder="Filter cepat berdasarkan No DO / NIM / Nama..."
+            @keyup.esc="keyword = ''"
+            style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"
+        />
+        <button @click="keyword = ''" class="btn" style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Filter</button>
+    </div>
+
+    <div class="menu-tabs" style="margin-bottom: 25px; display: flex; gap: 5px; border-bottom: 2px solid #0056b3;">
+        <button @click="menu='list'" :style="menu === 'list' ? 'background: #0056b3; color: white;' : ''" style="padding: 10px 20px; cursor: pointer; border: 1px solid #0056b3; border-bottom: none; border-radius: 4px 4px 0 0;">📦 List DO</button>
+        <button @click="menu='create'; isEdit=false;" :style="menu === 'create' ? 'background: #0056b3; color: white;' : ''" style="padding: 10px 20px; cursor: pointer; border: 1px solid #0056b3; border-bottom: none; border-radius: 4px 4px 0 0;">➕ Tambah DO</button>
+    </div>
+
+    <div v-if="menu==='list'" class="card-do" style="padding: 0px; border: none; background: transparent;">
+        <div style="overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95em;">
+                <thead>
+                    <tr style="background-color: #0056b3; color: white;">
+                        <th style="padding: 12px 15px; font-weight: 600;">No DO</th>
+                        <th style="padding: 12px 15px; font-weight: 600;">Judul Paket / Buku</th>
+                        <th style="padding: 12px 15px; font-weight: 600;">Nama Mahasiswa</th>
+                        <th style="padding: 12px 15px; font-weight: 600;">NIM</th>
+                        <th style="padding: 12px 15px; font-weight: 600;">Ekspedisi</th>
+                        <th style="padding: 12px 15px; font-weight: 600;">Tanggal Kirim</th>
+                        <th style="padding: 12px 15px; font-weight: 600;">Status</th>
+                        <th style="padding: 12px 15px; font-weight: 600; text-align: center;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, no) in listDoTerfilter" :key="no" style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 12px 15px; font-weight: bold; color: #0056b3;">{{ no }}</td>
+                        <td style="padding: 12px 15px;">{{ item.namaPaket || item.paket || '-' }}</td>
+                        <td style="padding: 12px 15px;"><b>{{ item.nama }}</b></td>
+                        <td style="padding: 12px 15px; color: #555;">{{ item.nim }}</td>
+                        <td style="padding: 12px 15px; color: #555;">{{ item.ekspedisi }}</td>
+                        <td style="padding: 12px 15px;">
+                            <span style="color: #007bff; font-weight: 500;">{{ item.tanggalKirim || '-' }}</span>
+                        </td>
+                        <td style="padding: 12px 15px;">
+                            <span class="badge" style="background: #e2f0d9; color: #385723; padding: 4px 10px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">
+                                {{ item.status }}
+                            </span>
+                        </td>
+                        <td style="padding: 12px 15px; text-align:center; white-space: nowrap;">
+                            <button @click="bukaDetailLog(no)" style="padding:6px 12px; background:#17a2b8; color:white; border:none; border-radius:6px; cursor:pointer;">Detail</button>
+                            
+                            <button @click="editDO(no); menu='create';" style="padding:6px 12px; margin-left:5px; background:#ffc107; color:black; border:none; border-radius:6px; cursor:pointer;">Edit</button>
+                            
+                            <button @click="hapusDO(no)" style="padding:6px 12px; margin-left:5px; background:#dc3545; color:white; border:none; border-radius:6px; cursor:pointer;">Hapus</button>
+                        </td>
+                    </tr>
+                    <tr v-if="Object.keys(listDoTerfilter).length === 0">
+                        <td colspan="8" style="text-align:center;padding:20px;color:#999;">Data Delivery Order tidak ditemukan.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div v-if="menu==='create'" class="form-container" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <h3>{{ isEdit ? 'Edit Delivery Order: ' + editNoDO : 'Tambah Delivery Order Baru' }}</h3>
+        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">NIM Mahasiswa</label>
+                <input v-model="form.nim" type="text" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            </div>
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">Nama Mahasiswa</label>
+                <input v-model="form.nama" type="text" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">Ekspedisi</label>
+                <select v-model="form.ekspedisi" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                    <option value="">-- Pilih Ekspedisi --</option>
+                    <option v-for="eks in pengirimanList" :key="eks" :value="eks">{{ eks }}</option>
+                    <option value="JNE Regular">JNE Regular</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">Tanggal Kirim</label>
+                <input v-model="form.tanggalKirim" type="date" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display:block; margin-bottom:5px; font-weight:bold;">Paket Bahan Ajar</label>
+            <select v-model="form.paket" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                <option :value="null">-- Pilih Paket --</option>
+                <option v-for="p in paket" :key="p.kode" :value="p.kode">{{ p.kode }} - {{ p.nama }} (Rp {{ p.harga }})</option>
+            </select>
+        </div>
+
+        <button @click="simpanDO" style="padding: 10px 20px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Simpan Delivery Order</button>
+        <button @click="menu='list'" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px;">Batal</button>
+    </div>
+
+    <div v-if="menu==='detail' && hasilCari" class="detail-container" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>Detail Pelacakan Log: {{ nomorDoTerpilih }}</h3>
+            <button @click="menu='list'" style="padding: 5px 15px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer;"> Kembali</button>
+        </div>
+        <p><b>Nama Penerima:</b> {{ hasilCari.nama }} ({{ hasilCari.nim }})</p>
+        <p><b>Paket / Buku:</b> {{ hasilCari.namaPaket }}</p>
+        <p><b>Kurir Ekspedisi:</b> {{ hasilCari.ekspedisi }}</p>
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        <h4>Riwayat Status Perjalanan Paket</h4>
+        
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <input v-model="progressBaru" type="text" placeholder="Tambahkan status/lokasi paket baru..." style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            <button @click="tambahProgress" style="padding:8px 15px; background:#28a745; color:white; border:none; border-radius:4px; cursor:pointer;">Update Posisi</button>
+        </div>
+
+        <ul style="list-style:none; padding-left:10px;">
+            <li v-for="(prog, idx) in hasilCari.perjalanan" :key="idx" style="margin-bottom:15px; padding-left:15px; border-left:2px solid #0056b3; position:relative;">
+                <span style="font-size:0.85em; color:#777; display:block;">🕒 {{ prog.waktu }}</span>
+                
+                <div v-if="editIndex !== idx">
+                    <span style="font-weight:500;">{{ prog.keterangan }}</span>
+                    <a href="#" @click.prevent="mulaiEditProgress(idx, prog.keterangan)" style="margin-left:10px; font-size:0.85em; color:#ffc107;">Edit</a>
+                    <a href="#" @click.prevent="hapusProgress(idx)" style="margin-left:5px; font-size:0.85em; color:#dc3545;">Hapus</a>
+                </div>
+
+                <div v-else style="display:flex; gap:5px; margin-top:5px;">
+                    <input v-model="editText" type="text" style="padding:4px; border:1px solid #ccc; border-radius:4px; flex:1;">
+                    <button @click="simpanEditProgress(idx)" style="padding:2px 8px; background:#28a745; color:white; border:none; border-radius:4px; font-size:0.85em;">OK</button>
+                    <button @click="editIndex = null" style="padding:2px 8px; background:#6c757d; color:white; border:none; border-radius:4px; font-size:0.85em;">Batal</button>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+</div>
+</script>
